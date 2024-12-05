@@ -35,18 +35,25 @@ def draw_line_plot():
 
 def draw_bar_plot():
     # Copy and modify data for monthly bar plot
-    df_bar = None
+    df.index = df.index.to_period('M')
+    df_bar = df.groupby(df.index)['value'].mean()
 
     # Draw bar plot
+    fig, ax = plt.subplots(layout='constrained')
+    df['year'] = df.index.year
+    df['month'] = df.index.month
 
+    for year, year_data in df.groupby('year'):
+        for month in range(1, 13):
+            print(df['month'])
 
-
-
+    ax.set_xlabel('Years')
+    ax.set_ylabel('Average Page Views')
 
     # Save image and return fig (don't change this part)
     fig.savefig('bar_plot.png')
     return fig
-
+draw_bar_plot()
 def draw_box_plot():
     # Prepare data for box plots (this part is done!)
     df_box = df.copy()
