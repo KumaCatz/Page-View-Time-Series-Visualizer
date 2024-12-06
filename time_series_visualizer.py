@@ -35,6 +35,7 @@ def draw_line_plot():
 
 def draw_bar_plot():
     # Copy and modify data for monthly bar plot
+    df_bar = df.copy()
     df_bar = df.index.to_period('M')
     df_bar = df.groupby(df_bar)['value'].mean()
 
@@ -88,10 +89,37 @@ def draw_box_plot():
     df_box['month'] = [d.strftime('%b') for d in df_box.date]
 
     # Draw box plots (using Seaborn)
+    fig, axes = plt.subplots(1, 2, figsize=(18, 6))
 
+    # First plot
+    sns.boxplot(
+        data=df_box,
+        x='year',
+        y='value',
+        ax=axes[0]
+        )
+    axes[0].set_title("Year-wise Box Plot (Trend)")
+    axes[0].set_xlabel("Year")
+    axes[0].set_ylabel("Page Views")
 
+    # Rearanging DataFrame for second plot
+    month_map = {
+        'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+        'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+    }
+    df_box['month_num'] = df_box['month'].map(month_map)
+    df_box = df_box.sort_values('month_num')
 
-
+    # Second plot
+    sns.boxplot(
+        data=df_box,
+        x='month',
+        y='value',
+        ax=axes[1]
+    )
+    axes[1].set_title("Month-wise Box Plot (Seasonality)")
+    axes[1].set_xlabel("Month")
+    axes[1].set_ylabel("Page Views")
 
     # Save image and return fig (don't change this part)
     fig.savefig('box_plot.png')
