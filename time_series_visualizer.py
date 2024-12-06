@@ -35,20 +35,47 @@ def draw_line_plot():
 
 def draw_bar_plot():
     # Copy and modify data for monthly bar plot
-    df.index = df.index.to_period('M')
-    df_bar = df.groupby(df.index)['value'].mean()
+    df_bar = df.index.to_period('M')
+    df_bar = df.groupby(df_bar)['value'].mean()
 
     # Draw bar plot
-    fig, ax = plt.subplots(layout='constrained')
-    df['year'] = df.index.year
-    df['month'] = df.index.month
+    years = tuple(df_bar.index.year.unique())
 
-    for year, year_data in df.groupby('year'):
+    month_names = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+
+    average_per_month_by_year = {month: [] for month in month_names}
+
+    for year in years:
         for month in range(1, 13):
-            print(df['month'])
+            month_data = df_bar[(df_bar.index.year == year) & (df_bar.index.month == month)]
+            value = month_data.values[0] if not month_data.empty else 0
+            average_per_month_by_year[month_names[month - 1]].append(value)
+
+    x = list(range(len(years)))
+    width = 0.03
+    multiplier = 0
+
+    fig, ax = plt.subplots(figsize=(8, 6), layout='constrained')
+    
+    for month, average in average_per_month_by_year.items():
+        offset = width * multiplier
+        rects = ax.bar([i + offset for i in x], average, width, label=month)
+        ax.bar_label(rects, padding=3)
+        multiplier += 1
 
     ax.set_xlabel('Years')
     ax.set_ylabel('Average Page Views')
+    ax.set_xticks([i + offset for i in x], years)
+    ax.legend(
+        loc='upper left',
+        ncols=1,
+        title="Months",
+        title_fontsize='small',
+        fontsize='small'
+        )
 
     # Save image and return fig (don't change this part)
     fig.savefig('bar_plot.png')
