@@ -58,17 +58,16 @@ def draw_bar_plot():
     width = 0.03
     multiplier = 0
 
-    fig, ax = plt.subplots(figsize=(8, 6), layout='constrained')
+    fig, ax = plt.subplots(figsize=(8, 6))
     
     for month, average in average_per_month_by_year.items():
         offset = width * multiplier
         rects = ax.bar([i + offset for i in x], average, width, label=month)
-        ax.bar_label(rects, padding=3)
         multiplier += 1
 
     ax.set_xlabel('Years')
     ax.set_ylabel('Average Page Views')
-    ax.set_xticks([i + offset for i in x], years)
+    ax.set_xticks([i - 0.18 + offset for i in x], years)
     ax.legend(
         loc='upper left',
         ncols=1,
@@ -80,7 +79,7 @@ def draw_bar_plot():
     # Save image and return fig (don't change this part)
     fig.savefig('bar_plot.png')
     return fig
-draw_bar_plot()
+
 def draw_box_plot():
     # Prepare data for box plots (this part is done!)
     df_box = df.copy()
